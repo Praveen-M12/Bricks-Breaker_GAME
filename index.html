@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brick Breaker Game</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #gameArea {
+            width: 600px;
+            height: 400px;
+            margin: 20px auto;
+            position: relative;
+            border: 2px solid #000;
+        }
+
+        #paddle {
+            width: 80px;
+            height: 10px;
+            background-color: #333;
+            position: absolute;
+            bottom: 10px;
+            left: 260px;
+        }
+
+        #ball {
+            width: 20px;
+            height: 20px;
+            background-color: red;
+            position: absolute;
+            bottom: 100px;
+            left: 300px;
+            border-radius: 50%;
+        }
+
+        #bricks {
+            position: absolute;
+            top: 0;
+            width: 100%;
+        }
+
+        .brick {
+            width: 70px;
+            height: 20px;
+            background-color: #0095DD;
+            margin: 5px;
+            display: inline-block;
+        }
+
+        #score {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+    </style>
+</head>
+<body>
+    <div id="gameArea">
+        <div id="paddle"></div>
+        <div id="ball"></div>
+        <div id="bricks"></div>
+    </div>
+    <div id="score">Score: 0</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const paddle = document.getElementById('paddle');
+            const ball = document.getElementById('ball');
+            const bricksContainer = document.getElementById('bricks');
+            const scoreDisplay = document.getElementById('score');
+
+            let ballX = 300;
+            let ballY = 100;
+            let dx = 2;
+            let dy = -2;
+            let score = 0;
+            let bricksCount = 0; // Initialize bricks count
+
+            function drawPaddle() {
+                paddle.style.left = paddleX + 'px';
+            }
+
+            function drawBall() {
+                ball.style.left = ballX + 'px';
+                ball.style.top = ballY + 'px';
+            }
+
+            function moveBall() {
+                ballX += dx;
+                ballY += dy;
+
+                if (ballX + dx > 600 - ball.offsetWidth || ballX + dx < 0) {
+                    dx = -dx;
+                }
+
+                if (ballY + dy < 0) {
+                    dy = -dy;
+                } else if (ballY + dy > 400 - ball.offsetHeight) {
+                    if (ballX > paddleX && ballX < paddleX + paddle.offsetWidth) {
+                        dy = -dy;
+                    } else {
+                        alert("Game Over. Your score: " + score);
+                        document.location.reload();
+                        clearInterval(interval);
+                    }
+                }
+            }
+
+            let paddleX = 260;
+            document.addEventListener('mousemove', function(event) {
+                paddleX = event.clientX - gameArea.offsetLeft - paddle.offsetWidth / 2;
+                if (paddleX < 0) {
+                    paddleX = 0;
+                }
+                if (paddleX > gameArea.offsetWidth - paddle.offsetWidth) {
+                    paddleX = gameArea.offsetWidth - paddle.offsetWidth;
+                }
+            });
+
+            function createBricks() {
+                for (let i = 0; i < 3; i++) {
+                    for (let j = 0; j < 6; j++) {
+                        let brick = document.createElement('div');
+                        brick.classList.add('brick');
+                        brick.style.left = 90 * j + 'px';
+                        brick.style.top = 30 * i + 'px';
+                        bricksContainer.appendChild(brick);
+                        bricksCount++; // Increment bricks count
+                    }
+                }
+            }
+
+            function gameLoop() {
+                moveBall();
+                drawBall();
+                drawPaddle();
+                checkCollision();
+            }
+
+            function checkCollision() {
+                let bricks = document.querySelectorAll('.brick');
+                bricks.forEach((brick) => {
+                    if (
+                        ballX + ball.offsetWidth >= brick.offsetLeft &&
+                        ballX <= brick.offsetLeft + brick.offsetWidth &&
+                        ballY + ball.offsetHeight >= brick.offsetTop &&
+                        ballY <= brick.offsetTop + brick.offsetHeight
+                    ) {
+                        dy = -dy;
+                        brick.parentNode.removeChild(brick);
+                        score++;
+                        scoreDisplay.textContent = 'Score: ' + score;
+                        bricksCount--;
+                    }
+                });
+                if (bricksCount === 0) {
+                    alert("Congratulations! You've won with a score of " + score);
+                    document.location.reload();
+                    clearInterval(interval);
+                }
+            }
+
+            createBricks();
+            let interval = setInterval(gameLoop, 10);
+        });
+    </script>
+</body>
+</html>

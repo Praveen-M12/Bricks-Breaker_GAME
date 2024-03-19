@@ -1,0 +1,48 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+.game-container {
+    position: relative;
+    width: 600px;
+    height: 400px;
+    margin: 0 auto;
+    overflow: hidden;
+    background-color: #f0f0f0;
+}
+
+.ball, .paddle {
+    position: absolute;
+    background-color: #333;
+}
+
+.ball {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
+
+.paddle {
+    width: 80px;
+    height: 20px;
+    bottom: 10px;
+    left: 260px;
+}
+
+.bricks {
+    position: absolute;
+    width: 600px;
+    height: 200px;
+    top: 50px;
+    left: 0;
+}
+
+.brick {
+    width: 50px;
+    height: 20px;
+    background-color: #0095DD;
+    border-radius: 5px;
+    margin: 5px;
+}
